@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply font-sans;
+  }
+  h1, h2, h3 {
+    @apply font-mono;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-white text-vert font-semibold px-6 py-3 rounded-lg hover:bg-fond transition-colors;
+  }
+  .btn-outline {
+    @apply border border-white text-white px-6 py-3 rounded-lg hover:bg-white/10 transition-colors;
+  }
+  .card {
+    @apply bg-white rounded-xl p-6 shadow-sm;
+  }
+  .page-container {
+    @apply max-w-4xl mx-auto px-4 py-12;
+  }
+  .page-title {
+    @apply font-mono text-3xl font-bold text-vert mb-8;
+  }
+}

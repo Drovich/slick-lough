@@ -1,0 +1,81 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { EVENT } from '../config';
+---
+
+<Layout title={`Info Slick Lough #${EVENT.edition}`} description={`Informations pratiques pour Slick Lough #${EVENT.edition}`}>
+
+  <div class="page-container">
+    <h1 class="page-title">Info sur Slick Lough #{EVENT.edition}</h1>
+
+    <div class="card mb-8 bg-vert/10 border border-vert/20">
+      <p class="text-lg font-semibold text-vert">
+        Une fête autour d'une piscine (mais pas que).
+      </p>
+      <p class="text-gray-600 mt-1 text-sm">Accès sur invitation — <strong>gratuit</strong></p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert text-lg mb-3">📅 Quand ?</h2>
+        <p class="text-gray-700 font-semibold">Samedi {EVENT.date} à 18h</p>
+        <p class="text-gray-500 text-sm mt-1">Arrivée possible dès le vendredi. Activités dès la matinée du samedi.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert text-lg mb-3">📍 Où ?</h2>
+        <p class="text-gray-700 mb-2">{EVENT.adresse}</p>
+        <a href={EVENT.mapsUrl} target="_blank" rel="noopener" class="text-vert hover:underline text-sm font-medium">
+          Voir sur OpenStreetMap ↗
+        </a>
+      </div>
+
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert text-lg mb-3">🍽️ Ce qu'on y mange</h2>
+        <p class="text-gray-700">De très bonnes choses.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert text-lg mb-3">🍹 Ce qu'on y boit</h2>
+        <p class="text-gray-700">De très très bonnes choses.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert text-lg mb-3">🎉 Ce qu'on y fait</h2>
+        <p class="text-gray-700">De très très très bonnes choses.</p>
+        <ul class="text-gray-600 text-sm mt-2 space-y-1 list-disc list-inside">
+          <li>Baignade dans le lac</li>
+          <li>Escalade / Blocs</li>
+          <li>Danse</li>
+          <li>Trail 3,5km (samedi matin)</li>
+          <li>Tournoi Mario Kart (le soir)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert text-lg mb-3">🏕️ Hébergement</h2>
+        <p class="text-gray-700">Camping en tente sur place.</p>
+        <p class="text-gray-500 text-sm mt-1">Parking sur site. (Photos non contractuelles.)</p>
+      </div>
+
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert text-lg mb-3">💸 Combien ça coûte ?</h2>
+        <p class="text-gray-700">L'accès est <strong>gratuit</strong>. Si tu veux participer financièrement, un chapeau passe (espèces ou chèques) et une cagnotte en ligne est disponible.</p>
+        <a href="/paiement" class="inline-block mt-3 text-vert hover:underline text-sm font-medium">
+          Contribuer →
+        </a>
+      </div>
+
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert text-lg mb-3">✍️ Inscription</h2>
+        <p class="text-gray-700 mb-4">Remplis le formulaire pour nous prévenir de ta venue.</p>
+        <a href="/inscription" class="inline-block bg-vert text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-vert/90 transition-colors">
+          Je m'inscris →
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+</Layout>

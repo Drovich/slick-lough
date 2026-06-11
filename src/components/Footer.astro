@@ -1,0 +1,19 @@
+---
+import { EVENT } from '../config';
+---
+
+<footer class="bg-gray-800 text-gray-300 mt-16 py-8 text-sm">
+  <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+    <p class="font-mono">
+      Slick Lough #{EVENT.edition} — {EVENT.date} — {EVENT.lieu}
+    </p>
+    <nav class="flex flex-wrap gap-4 justify-center">
+      <a href="/infos" class="hover:text-white transition-colors">Infos</a>
+      <a href="/le-site" class="hover:text-white transition-colors">Le site</a>
+      <a href="/contact" class="hover:text-white transition-colors">Contact</a>
+      <a href={EVENT.mapsUrl} target="_blank" rel="noopener" class="hover:text-white transition-colors">
+        OpenStreetMap ↗
+      </a>
+    </nav>
+  </div>
+</footer>

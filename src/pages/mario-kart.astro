@@ -1,0 +1,62 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import marioImg from '../assets/images/mario.png';
+---
+
+<Layout title="Tournoi MK-World #3" description="Tournoi Mario Kart — Slick Lough">
+
+  <div class="page-container max-w-3xl">
+    <div class="flex items-center gap-4 mb-8">
+      <Image src={marioImg} alt="Mario Kart" class="w-14 h-14 object-contain" />
+      <h1 class="page-title mb-0">Tournoi MK-World #3</h1>
+    </div>
+
+    <div class="card mb-6">
+      <p class="text-gray-700 leading-relaxed">
+        Les matchs sont organisés <strong>le soir</strong> à partir d'une liste de participants inscrits.
+        Que lae meilleur·e gagne !
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-6">
+
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert mb-3">🏎️ Format</h2>
+        <ul class="text-gray-700 text-sm space-y-2 list-disc list-inside">
+          <li>Poules de 4 joueurs·euses</li>
+          <li>5 courses par poule</li>
+          <li>Les 2 premiers·ères de chaque poule se qualifient</li>
+          <li>Finale au meilleur des 7 courses</li>
+        </ul>
+        <p class="text-gray-500 text-xs mt-3 italic">Format susceptible d'évoluer.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert mb-3">🏆 Récompense</h2>
+        <p class="text-gray-700 text-sm leading-relaxed">
+          Un lot en cash pour le·la vainqueur·e, déterminé par un tirage au sort pondéré selon le classement.
+          Chaque place obtenue double tes chances de remporter le lot.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert mb-3">📋 Règles</h2>
+        <p class="text-gray-700 text-sm">
+          Les organisateurs·rices comptent sur <em>l'honnêteté des inscrit·es</em>.
+          En cas de litige, on donnera raison à celui·celle qui entretient les meilleures relations avec les organisateurs·rices.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert mb-3">✍️ Inscription</h2>
+        <p class="text-gray-700 text-sm mb-4">L'inscription se fait via le formulaire général.</p>
+        <a href="/inscription" class="inline-block bg-vert text-white font-semibold px-4 py-2 rounded-lg text-sm hover:bg-vert/90 transition-colors">
+          S'inscrire →
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+</Layout>

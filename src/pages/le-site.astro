@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+
+// Toutes les photos réelles du site
+const photos = await Astro.glob('../assets/images/img_20210522_*.jpg');
+const photosSupp = await Astro.glob('../assets/images/photo_603*.jpg');
+const photoPano = await Astro.glob('../assets/images/pano_*.jpg');
+const allPhotos = [...photoPano, ...photos, ...photosSupp];
+---
+
+<Layout title="Le site" description="Présentation du site de Lisse Lac à Mézin">
+
+  <div class="page-container">
+    <h1 class="page-title">Le site</h1>
+
+    <div class="card mb-8 text-gray-700 leading-relaxed space-y-3">
+      <p>
+        Slick Lough se déroule à <strong>Lisse Lac</strong>, un espace naturel exceptionnel
+        situé à Mézin, dans le Lot-et-Garonne.
+      </p>
+      <p>
+        Le site propose camping en tente, accès au lac pour la baignade,
+        une zone de blocs pour l'escalade, un espace danse, restauration et sanitaires sur place.
+      </p>
+      <p class="font-mono text-sm text-gray-500">
+        2990 route de Nérac, Lieu dit Bacala, 47170 Mézin
+      </p>
+    </div>
+
+    <!-- Galerie photos -->
+    <h2 class="font-mono text-xl font-bold text-vert mb-6">Photos du site</h2>
+    <div class="columns-1 sm:columns-2 md:columns-3 gap-4 space-y-4">
+      {allPhotos.map((photo) => (
+        <div class="break-inside-avoid">
+          <img
+            src={photo.default.src}
+            alt="Photo du site de Lisse Lac"
+            class="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+            loading="lazy"
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+
+</Layout>

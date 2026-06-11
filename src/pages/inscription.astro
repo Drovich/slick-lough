@@ -1,0 +1,77 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { EVENT } from '../config';
+---
+
+<Layout title="Je viens" description="Comment venir à Slick Lough">
+
+  <div class="page-container max-w-3xl">
+    <h1 class="page-title">Je viens !</h1>
+
+    <!-- Formulaire -->
+    <div class="card text-center py-10 mb-8">
+      <p class="text-5xl mb-6">🎉</p>
+      <p class="text-gray-700 text-lg mb-2">
+        Préviens-nous de ta venue en remplissant le formulaire.
+      </p>
+      <p class="text-gray-500 text-sm mb-8">
+        Tu seras redirigé(e) vers Framaforms.
+      </p>
+      <a
+        href={EVENT.framaformUrl}
+        target="_blank"
+        rel="noopener"
+        class="inline-block bg-vert text-white font-bold px-8 py-4 rounded-xl hover:bg-vert/90 transition-colors text-lg"
+      >
+        Formulaire d'inscription ↗
+      </a>
+    </div>
+
+    <!-- Comment venir -->
+    <h2 class="font-mono text-xl font-bold text-vert mb-4">Comment venir ?</h2>
+    <p class="text-sm text-gray-500 mb-6 font-mono">{EVENT.adresse}</p>
+
+    <div class="space-y-4">
+
+      <div class="card">
+        <h3 class="font-mono font-bold text-gray-800 mb-2">🚗 Depuis Bordeaux</h3>
+        <a
+          href="https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=44.8412%2C-0.5800%3B44.0803%2C0.2780"
+          target="_blank"
+          rel="noopener"
+          class="text-vert hover:underline text-sm font-medium"
+        >
+          Itinéraire sur OpenStreetMap ↗
+        </a>
+      </div>
+
+      <div class="card">
+        <h3 class="font-mono font-bold text-gray-800 mb-2">🚗 Depuis Toulouse</h3>
+        <a
+          href="https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=43.6047%2C1.4442%3B44.0803%2C0.2780"
+          target="_blank"
+          rel="noopener"
+          class="text-vert hover:underline text-sm font-medium"
+        >
+          Itinéraire sur OpenStreetMap ↗
+        </a>
+      </div>
+
+      <div class="card">
+        <h3 class="font-mono font-bold text-gray-800 mb-3">🚂 En train</h3>
+        <p class="text-gray-700 text-sm mb-2">
+          Deux options de gare :
+        </p>
+        <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+          <li>TGV / Intercité jusqu'à <strong>Agen</strong></li>
+          <li>TER jusqu'à <strong>Aiguillon</strong></li>
+        </ul>
+        <p class="text-gray-500 text-sm mt-3 italic">
+          Une âme charitable viendra vous récupérer.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+</Layout>
