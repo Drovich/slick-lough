@@ -28,10 +28,11 @@ jobs:
         run: npm run build
 
       - name: Déploie vers OVH via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/
-          server-dir: /www/
+        run: |
+          sudo apt-get install -y lftp
+          lftp -c "
+            set ssl:verify-certificate no;
+            set ftp:passive-mode on;
+            open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' '${{ secrets.FTP_SERVER }}';
+            mirror --reverse --delete --verbose --parallel=4 dist/ /www/;
+          "

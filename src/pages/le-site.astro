@@ -4,8 +4,18 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const imagesDir = path.join(process.cwd(), 'public/images');
-const photos = fs.readdirSync(imagesDir)
-  .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f))
+const allFiles = fs.readdirSync(imagesDir).filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f));
+
+// Garde uniquement les vraies photos du site (pas les stocks pexels/pixnio)
+const photos = allFiles
+  .filter(f =>
+    f.startsWith('img_20210522') ||
+    f.startsWith('photo_6037') ||
+    f.startsWith('photo_5846') ||
+    f.startsWith('photo_5971') ||
+    f.startsWith('wp-162') ||
+    f.startsWith('cropped-wp')
+  )
   .sort();
 ---
 
@@ -14,7 +24,7 @@ const photos = fs.readdirSync(imagesDir)
   <div class="page-container">
     <h1 class="page-title">Le site</h1>
 
-    <div class="card mb-8 text-gray-700 leading-relaxed space-y-3">
+    <div class="card mb-10 text-gray-700 leading-relaxed space-y-3">
       <p>
         Slick Lough se déroule à <strong>Lisse Lac</strong>, un espace naturel exceptionnel
         situé à Mézin, dans le Lot-et-Garonne.
@@ -28,21 +38,101 @@ const photos = fs.readdirSync(imagesDir)
       </p>
     </div>
 
-    <h2 class="font-mono text-xl font-bold text-vert mb-2">Photos du site</h2>
-    <p class="text-sm text-gray-400 italic mb-6">(Photos non contractuelles)</p>
+    <!-- Galerie -->
+    <h2 class="font-mono text-xl font-bold text-vert mb-6">Photos du site</h2>
 
-    <div class="columns-1 sm:columns-2 md:columns-3 gap-4 space-y-4">
-      {photos.map((filename) => (
-        <div class="break-inside-avoid">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+      {photos.map((filename, i) => (
+        <button
+          class="group relative overflow-hidden rounded-xl aspect-square bg-gray-100 cursor-zoom-in"
+          data-src={`/images/${filename}`}
+          data-index={i}
+          aria-label="Agrandir la photo"
+        >
           <img
             src={`/images/${filename}`}
             alt="Photo du site de Lisse Lac"
-            class="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
           />
-        </div>
+          <div class="absolute inset-0 bg-vert/0 group-hover:bg-vert/20 transition-colors duration-300 flex items-center justify-center">
+            <svg class="w-10 h-10 text-white drop-shadow opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+            </svg>
+          </div>
+        </button>
       ))}
     </div>
+
+    <p class="text-xs text-gray-400 italic mt-4 text-right">(Photos non contractuelles)</p>
+  </div>
+
+  <!-- Lightbox -->
+  <div
+    id="lightbox"
+    class="hidden fixed inset-0 bg-black/95 z-50 items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+  >
+    <button id="lb-close" class="absolute top-4 right-5 text-white/70 hover:text-white text-4xl leading-none transition-colors" aria-label="Fermer">×</button>
+    <button id="lb-prev" class="absolute left-3 md:left-6 text-white/70 hover:text-white transition-colors p-2" aria-label="Photo précédente">
+      <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+    <img id="lb-img" src="" alt="Photo agrandie" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl" />
+    <button id="lb-next" class="absolute right-3 md:right-6 text-white/70 hover:text-white transition-colors p-2" aria-label="Photo suivante">
+      <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+    <span id="lb-counter" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/50 text-sm font-mono"></span>
   </div>
 
 </Layout>
+
+<script>
+  const photos: string[] = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-src]'))
+    .map(btn => btn.dataset.src!);
+
+  let current = 0;
+  const lb = document.getElementById('lightbox')!;
+  const lbImg = document.getElementById('lb-img') as HTMLImageElement;
+  const lbCounter = document.getElementById('lb-counter')!;
+
+  function open(index: number) {
+    current = index;
+    lbImg.src = photos[current];
+    lbCounter.textContent = `${current + 1} / ${photos.length}`;
+    lb.classList.remove('hidden');
+    lb.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    lb.classList.add('hidden');
+    lb.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+
+  function prev() { open((current - 1 + photos.length) % photos.length); }
+  function next() { open((current + 1) % photos.length); }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-src]').forEach((btn, i) => {
+    btn.addEventListener('click', () => open(i));
+  });
+
+  document.getElementById('lb-close')!.addEventListener('click', close);
+  document.getElementById('lb-prev')!.addEventListener('click', prev);
+  document.getElementById('lb-next')!.addEventListener('click', next);
+
+  lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+
+  document.addEventListener('keydown', (e) => {
+    if (!lb.classList.contains('hidden')) {
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') prev();
+      if (e.key === 'ArrowRight') next();
+    }
+  });
+</script>
