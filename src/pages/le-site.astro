@@ -1,12 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { Image } from 'astro:assets';
+import fs from 'node:fs';
+import path from 'node:path';
 
-// Toutes les photos réelles du site
-const photos = await Astro.glob('../assets/images/img_20210522_*.jpg');
-const photosSupp = await Astro.glob('../assets/images/photo_603*.jpg');
-const photoPano = await Astro.glob('../assets/images/pano_*.jpg');
-const allPhotos = [...photoPano, ...photos, ...photosSupp];
+const imagesDir = path.join(process.cwd(), 'public/images');
+const photos = fs.readdirSync(imagesDir)
+  .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f))
+  .sort();
 ---
 
 <Layout title="Le site" description="Présentation du site de Lisse Lac à Mézin">
@@ -28,13 +28,14 @@ const allPhotos = [...photoPano, ...photos, ...photosSupp];
       </p>
     </div>
 
-    <!-- Galerie photos -->
     <h2 class="font-mono text-xl font-bold text-vert mb-6">Photos du site</h2>
+    <p class="text-sm text-gray-400 italic mb-4">(Photos non contractuelles)</p>
+
     <div class="columns-1 sm:columns-2 md:columns-3 gap-4 space-y-4">
-      {allPhotos.map((photo) => (
+      {photos.map((filename) => (
         <div class="break-inside-avoid">
           <img
-            src={photo.default.src}
+            src={`/images/${filename}`}
             alt="Photo du site de Lisse Lac"
             class="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
             loading="lazy"
