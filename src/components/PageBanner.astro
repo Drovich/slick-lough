@@ -1,0 +1,26 @@
+---
+import { EVENT } from '../config';
+---
+
+<div class="bg-fond border-b border-vert/20">
+  <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div>
+      <span class="font-mono font-bold text-vert text-lg">
+        Slick Lough #{EVENT.edition}
+      </span>
+      <span class="hidden sm:inline text-gray-400 mx-2">·</span>
+      <span class="block sm:inline text-sm text-gray-500">{EVENT.date} — {EVENT.lieu}</span>
+    </div>
+    <div class="flex gap-3 flex-wrap justify-center">
+      <a href="/inscription" class="text-sm bg-vert text-white font-semibold px-4 py-1.5 rounded-lg hover:bg-vert/90 transition-colors">
+        Je viens
+      </a>
+      <a href="/infos" class="text-sm border border-vert text-vert font-semibold px-4 py-1.5 rounded-lg hover:bg-vert/5 transition-colors">
+        Infos pratiques
+      </a>
+      <a href="/contact" class="text-sm border border-vert text-vert font-semibold px-4 py-1.5 rounded-lg hover:bg-vert/5 transition-colors">
+        Contact
+      </a>
+    </div>
+  </div>
+</div>

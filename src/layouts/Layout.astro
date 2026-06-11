@@ -1,14 +1,22 @@
 ---
 import Header from '../components/Header.astro';
+import PageBanner from '../components/PageBanner.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
 
 interface Props {
   title: string;
   description?: string;
+  showBanner?: boolean;
 }
 
-const { title, description = 'Slick Lough — Événement estival à Mézin (47)' } = Astro.props;
+const {
+  title,
+  description = 'Slick Lough — Événement estival à Mézin (47)',
+  showBanner = true,
+} = Astro.props;
+
+const isHome = Astro.url.pathname === '/';
 ---
 <!doctype html>
 <html lang="fr">
@@ -27,6 +35,7 @@ const { title, description = 'Slick Lough — Événement estival à Mézin (47)
   </head>
   <body class="bg-fond text-gray-800 min-h-screen flex flex-col">
     <Header />
+    {showBanner && !isHome && <PageBanner />}
     <main class="flex-1">
       <slot />
     </main>
