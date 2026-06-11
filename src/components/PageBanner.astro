@@ -1,5 +1,13 @@
 ---
 import { EVENT } from '../config';
+
+const path = Astro.url.pathname;
+
+const links = [
+  { href: '/inscription', label: 'Je viens' },
+  { href: '/infos',       label: 'Infos pratiques' },
+  { href: '/contact',     label: 'Contact' },
+];
 ---
 
 <div class="bg-fond border-b border-vert/20">
@@ -12,15 +20,21 @@ import { EVENT } from '../config';
       <span class="block sm:inline text-sm text-gray-500">{EVENT.date} — {EVENT.lieu}</span>
     </div>
     <div class="flex gap-3 flex-wrap justify-center">
-      <a href="/inscription" class="text-sm bg-vert text-white font-semibold px-4 py-1.5 rounded-lg hover:bg-vert/90 transition-colors">
-        Je viens
-      </a>
-      <a href="/infos" class="text-sm border border-vert text-vert font-semibold px-4 py-1.5 rounded-lg hover:bg-vert/5 transition-colors">
-        Infos pratiques
-      </a>
-      <a href="/contact" class="text-sm border border-vert text-vert font-semibold px-4 py-1.5 rounded-lg hover:bg-vert/5 transition-colors">
-        Contact
-      </a>
+      {links.map(({ href, label }) => {
+        const active = path.startsWith(href);
+        return (
+          <a
+            href={href}
+            class={`text-sm font-semibold px-4 py-1.5 rounded-lg transition-colors ${
+              active
+                ? 'bg-white text-vert border border-vert shadow-sm'
+                : 'bg-vert text-white hover:bg-vert/90'
+            }`}
+          >
+            {label}
+          </a>
+        );
+      })}
     </div>
   </div>
 </div>

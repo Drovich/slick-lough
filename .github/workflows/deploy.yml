@@ -34,5 +34,6 @@ jobs:
             set ssl:verify-certificate no;
             set ftp:passive-mode on;
             open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' '${{ secrets.FTP_SERVER }}';
+            rm -rf /www/_astro/;
             mirror --reverse --delete --verbose --parallel=4 dist/ /www/;
           "

@@ -14,9 +14,6 @@ import { EVENT } from '../config';
       <p class="text-gray-700 text-lg mb-2">
         Préviens-nous de ta venue en remplissant le formulaire.
       </p>
-      <p class="text-gray-500 text-sm mb-8">
-        Le formulaire s'ouvre dans un nouvel onglet.
-      </p>
       <a
         href={EVENT.framaformUrl}
         target="_blank"
@@ -29,7 +26,9 @@ import { EVENT } from '../config';
 
     <!-- Comment venir -->
     <h2 class="font-mono text-xl font-bold text-vert mb-4">Comment venir ?</h2>
-    <p class="text-sm text-gray-500 mb-6 font-mono">{EVENT.adresse}</p>
+    <a href={EVENT.mapsUrl} target="_blank" rel="noopener" class="text-sm text-gray-500 mb-6 font-mono hover:text-vert transition-colors block">
+      {EVENT.adresse} ↗
+    </a>
 
     <div class="space-y-4">
 
