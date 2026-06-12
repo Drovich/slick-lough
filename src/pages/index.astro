@@ -1,8 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { EVENT } from '../config';
-import heroPano from '../assets/images/pano_20210522_111202-min.jpg';
-import { Image } from 'astro:assets';
 
 const temoignages = [
   {
@@ -33,20 +31,13 @@ const temoignages = [
   <!-- Hero -->
   <section class="relative text-white text-center">
     <div class="absolute inset-0 overflow-hidden">
-      <Image
-        src={heroPano}
-        alt="Vue panoramique du site de Lisse Lac"
-        class="w-full h-full object-cover"
-        widths={[800, 1200, 1600]}
-        sizes="100vw"
-      />
+      <img id="hero-bg" src="/images/img_20210522_131835-min.jpg" alt="" class="w-full h-full object-cover" />
       <div class="absolute inset-0 bg-vert/75"></div>
     </div>
 
-    <div class="relative py-28 md:py-40 lg:py-52 px-4">
-      <h1 class="font-mono font-bold drop-shadow-lg leading-none mb-4">
-        <span class="block text-5xl md:text-8xl">Slick Lough</span>
-        <span class="block text-5xl md:text-8xl opacity-90">#{EVENT.edition}</span>
+    <div class="relative py-16 md:py-24 px-4">
+      <h1 class="font-mono font-bold drop-shadow-lg leading-none mb-4 text-4xl md:text-7xl">
+        Slick Lough #{EVENT.edition}
       </h1>
       <p class="text-base md:text-lg font-light tracking-widest uppercase opacity-70 mb-6">
         {EVENT.subtitle}
@@ -70,57 +61,67 @@ const temoignages = [
   </section>
 
   <!-- Infos clés -->
-  <section class="max-w-4xl mx-auto px-4 py-16">
-    <div class="grid sm:grid-cols-3 gap-6 text-center">
-      <div class="card">
-        <p class="text-4xl mb-3">📅</p>
-        <h2 class="font-mono font-bold text-vert text-lg mb-1">Date</h2>
-        <p class="text-gray-600">{EVENT.date}</p>
+  <section class="relative py-16 px-4">
+    <div class="absolute inset-0 overflow-hidden">
+      <img id="prog-bg" src="/images/img_20210522_131835-min.jpg" alt="" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-fond/88"></div>
+    </div>
+    <div class="relative max-w-4xl mx-auto">
+      <div class="grid sm:grid-cols-3 gap-6 text-center">
+        <div class="card">
+          <p class="text-4xl mb-3">📅</p>
+          <h2 class="font-mono font-bold text-vert text-lg mb-1">Date</h2>
+          <p class="text-gray-600">{EVENT.date}</p>
+        </div>
+        <div class="card">
+          <p class="text-4xl mb-3">📍</p>
+          <h2 class="font-mono font-bold text-vert text-lg mb-1">Lieu</h2>
+          <a href={EVENT.mapsUrl} target="_blank" rel="noopener" class="text-gray-600 hover:text-vert transition-colors">
+            {EVENT.lieu}
+          </a>
+        </div>
+        <div class="card">
+          <p class="text-4xl mb-3">🏕️</p>
+          <h2 class="font-mono font-bold text-vert text-lg mb-1">Camping</h2>
+          <p class="text-gray-600">Tentes sur place</p>
+        </div>
       </div>
-      <div class="card">
-        <p class="text-4xl mb-3">📍</p>
-        <h2 class="font-mono font-bold text-vert text-lg mb-1">Lieu</h2>
-        <a href={EVENT.mapsUrl} target="_blank" rel="noopener" class="text-gray-600 hover:text-vert transition-colors">
-          {EVENT.lieu}
+
+      <div class="flex flex-wrap justify-center gap-4 mt-10">
+        <a href="/mario-kart" class="card hover:shadow-md transition-shadow flex items-center gap-3 no-underline">
+          <span class="text-2xl">🏎️</span>
+          <span class="font-mono font-bold text-vert">Tournoi MK-World #3</span>
+        </a>
+        <a href="/blocs" class="card hover:shadow-md transition-shadow flex items-center gap-3 no-underline">
+          <span class="text-2xl">🧗</span>
+          <span class="font-mono font-bold text-vert">Tournoi de Blocs #3</span>
+        </a>
+        <a href="/trail" class="card hover:shadow-md transition-shadow flex items-center gap-3 no-underline">
+          <span class="text-2xl">🏃</span>
+          <span class="font-mono font-bold text-vert">Trail 3,5km</span>
         </a>
       </div>
-      <div class="card">
-        <p class="text-4xl mb-3">🏕️</p>
-        <h2 class="font-mono font-bold text-vert text-lg mb-1">Camping</h2>
-        <p class="text-gray-600">Tentes sur place</p>
-      </div>
-    </div>
-
-    <div class="flex flex-wrap justify-center gap-4 mt-10">
-      <a href="/mario-kart" class="card hover:shadow-md transition-shadow flex items-center gap-3 no-underline">
-        <span class="text-2xl">🏎️</span>
-        <span class="font-mono font-bold text-vert">Tournoi MK-World #3</span>
-      </a>
-      <a href="/blocs" class="card hover:shadow-md transition-shadow flex items-center gap-3 no-underline">
-        <span class="text-2xl">🧗</span>
-        <span class="font-mono font-bold text-vert">Tournoi de Blocs #3</span>
-      </a>
-      <a href="/trail" class="card hover:shadow-md transition-shadow flex items-center gap-3 no-underline">
-        <span class="text-2xl">🏃</span>
-        <span class="font-mono font-bold text-vert">Trail 3,5km</span>
-      </a>
     </div>
   </section>
 
   <!-- Témoignages -->
-  <section class="bg-vert py-16 px-4">
-    <div class="max-w-4xl mx-auto">
+  <section class="relative py-16 px-4">
+    <div class="absolute inset-0 overflow-hidden">
+      <img id="testi-bg" src="/images/img_20210522_131613-min.jpg" alt="" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-vert/80"></div>
+    </div>
+    <div class="relative max-w-4xl mx-auto">
       <h2 class="font-mono text-2xl font-bold text-white text-center mb-10 opacity-80 tracking-wide uppercase">
         Ce qu'ils en disent
       </h2>
       <div class="grid md:grid-cols-2 gap-5">
         {temoignages.map((t) => (
-          <blockquote class="relative bg-white/10 rounded-2xl px-7 py-6 backdrop-blur-sm">
-            <span class="absolute top-2 left-4 text-7xl text-white/15 font-serif leading-none select-none">"</span>
-            <p class="relative italic text-white/90 mb-4 leading-relaxed text-sm md:text-base">
+          <blockquote class="relative bg-white/10 rounded-2xl px-8 py-8 backdrop-blur-sm">
+            <span class="absolute top-2 left-4 text-8xl text-white/20 font-serif leading-none select-none">"</span>
+            <p class="relative italic text-white mb-5 leading-loose text-base md:text-lg">
               {t.texte}
             </p>
-            <footer class="font-mono text-xs text-white/50 font-bold uppercase tracking-widest">
+            <footer class="font-mono text-sm text-white/60 font-bold uppercase tracking-widest">
               — {t.auteur}
             </footer>
           </blockquote>
@@ -130,3 +131,58 @@ const temoignages = [
   </section>
 
 </Layout>
+
+<script>
+function pick(arr: string[]) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+const imgPhotos = [
+  '/images/img_20210522_130942-min.jpg',
+  '/images/img_20210522_131228-min.jpg',
+  '/images/img_20210522_131442-min.jpg',
+  '/images/img_20210522_131526-min.jpg',
+  '/images/img_20210522_131613-min.jpg',
+  '/images/img_20210522_131805-min.jpg',
+  '/images/img_20210522_131835-min.jpg',
+  '/images/img_20210522_131846-min.jpg',
+  '/images/img_20210522_131915-min.jpg',
+  '/images/img_20210522_131950-min.jpg',
+  '/images/img_20210522_132023-min.jpg',
+  '/images/img_20210522_132045-min.jpg',
+  '/images/img_20210522_132109-min.jpg',
+  '/images/img_20210522_132157-min.jpg',
+  '/images/img_20210522_132244-min.jpg',
+  '/images/img_20210522_132341-min.jpg',
+  '/images/img_20210522_132413-min.jpg',
+  '/images/img_20210522_132546-min.jpg',
+  '/images/img_20210522_132627-min.jpg',
+  '/images/img_20210522_132641-min.jpg',
+  '/images/img_20210522_132718-min.jpg',
+  '/images/img_20210522_132856-min.jpg',
+  '/images/img_20210522_133009-min.jpg',
+  '/images/img_20210522_133123-min.jpg',
+];
+
+const photoPhotos = [
+  '/images/photo_5846120415016106531_y.jpg',
+  '/images/photo_5971802638544648069_y.jpg',
+  '/images/photo_6037290951254327267_y.jpg',
+  '/images/photo_6037290951254327268_y.jpg',
+  '/images/photo_6037290951254327269_y.jpg',
+  '/images/photo_6037290951254327270_y.jpg',
+  '/images/photo_6037290951254327271_y.jpg',
+  '/images/photo_6037290951254327272_y.jpg',
+  '/images/photo_6037290951254327273_y.jpg',
+  '/images/photo_6037290951254327274_y.jpg',
+  '/images/photo_6037290951254327277_y.jpg',
+  '/images/photo_6037290951254327278_y.jpg',
+  '/images/photo_6037290951254327279_y.jpg',
+  '/images/photo_6037290951254327280_y.jpg',
+  '/images/photo_6037290951254327281_y.jpg',
+  '/images/photo_6037290951254327282_y.jpg',
+  '/images/photo_6037290951254327283_y.jpg',
+];
+
+(document.getElementById('hero-bg') as HTMLImageElement).src = pick(imgPhotos);
+(document.getElementById('prog-bg') as HTMLImageElement).src = pick(photoPhotos);
+(document.getElementById('testi-bg') as HTMLImageElement).src = pick(imgPhotos);
+</script>

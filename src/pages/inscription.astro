@@ -5,72 +5,80 @@ import { EVENT } from '../config';
 
 <Layout title="Je viens" description="Comment venir à Slick Lough">
 
-  <div class="page-container max-w-3xl">
-    <h1 class="page-title">Je viens !</h1>
-
-    <!-- Formulaire -->
-    <div class="card text-center py-10 mb-8">
-      <p class="text-5xl mb-6">🎉</p>
-      <p class="text-gray-700 text-lg mb-2">
+  <!-- Formulaire -->
+  <div class="relative">
+    <img src="/images/img_20210522_131950-min.jpg" alt="" class="w-full h-[500px] md:h-[600px] object-cover" />
+    <div class="absolute inset-0 bg-black/55 flex flex-col items-center justify-center text-center px-6">
+      <h1 class="font-mono text-2xl md:text-4xl uppercase tracking-widest text-white/70 mb-6">Je viens !</h1>
+      <p class="text-white/60 text-lg mb-8 max-w-md">
         Préviens-nous de ta venue en remplissant le formulaire.
       </p>
-      <a
-        href={EVENT.framaformUrl}
-        target="_blank"
-        rel="noopener"
-        class="inline-block bg-vert text-white font-bold px-8 py-4 rounded-xl hover:bg-vert/90 transition-colors text-lg"
-      >
+      <a href={EVENT.framaformUrl} target="_blank" rel="noopener"
+         class="inline-block border border-white text-white font-bold px-8 py-4 rounded-xl hover:bg-white/10 transition-colors text-lg">
         Formulaire d'inscription ↗
       </a>
     </div>
+  </div>
 
-    <!-- Comment venir -->
-    <h2 class="font-mono text-xl font-bold text-vert mb-4">Comment venir ?</h2>
-    <a href={EVENT.mapsUrl} target="_blank" rel="noopener" class="text-sm text-gray-500 mb-6 font-mono hover:text-vert transition-colors block">
-      {EVENT.adresse} ↗
-    </a>
-
-    <div class="space-y-4">
-
-      <div class="card">
-        <h3 class="font-mono font-bold text-gray-800 mb-2">🚗 Depuis Bordeaux</h3>
-        <a
-          href="https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=44.8412%2C-0.5800%3B44.08022%2C0.27833"
-          target="_blank"
-          rel="noopener"
-          class="text-vert hover:underline text-sm font-medium"
-        >
-          Itinéraire sur OpenStreetMap ↗
-        </a>
-      </div>
-
-      <div class="card">
-        <h3 class="font-mono font-bold text-gray-800 mb-2">🚗 Depuis Toulouse</h3>
-        <a
-          href="https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=43.6047%2C1.4442%3B44.08022%2C0.27833"
-          target="_blank"
-          rel="noopener"
-          class="text-vert hover:underline text-sm font-medium"
-        >
-          Itinéraire sur OpenStreetMap ↗
-        </a>
-      </div>
-
-      <div class="card">
-        <h3 class="font-mono font-bold text-gray-800 mb-3">🚂 En train</h3>
-        <p class="text-gray-700 text-sm mb-2">
-          Deux options de gare :
-        </p>
-        <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
-          <li>TGV / Intercité jusqu'à <strong>Agen</strong></li>
-          <li>TER jusqu'à <strong>Aiguillon</strong></li>
-        </ul>
-        <p class="text-gray-500 text-sm mt-3 italic">
-          Une âme charitable viendra vous récupérer.
-        </p>
-      </div>
-
+  <!-- Carte OSM -->
+  <div class="relative">
+    <iframe
+      src="https://www.openstreetmap.org/export/embed.html?bbox=0.265%2C44.073%2C0.292%2C44.088&layer=mapnik&marker=44.08022%2C0.27833"
+      class="w-full h-[420px] md:h-[500px] border-0"
+      title="Localisation Slick Lough"
+      loading="lazy"
+    ></iframe>
+    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-10 py-6 pointer-events-none">
+      <p class="font-mono text-white/80 text-sm text-right">{EVENT.adresse}</p>
+    </div>
+    <div class="absolute top-4 right-4">
+      <a href={EVENT.mapsUrl} target="_blank" rel="noopener"
+         class="bg-black/60 text-white text-sm font-mono px-4 py-2 rounded-lg hover:bg-black/80 transition-colors">
+        Ouvrir dans OSM ↗
+      </a>
     </div>
   </div>
+
+  <!-- Comment venir -->
+  <section class="relative py-16 px-6">
+    <div class="absolute inset-0 overflow-hidden">
+      <img src="/images/navigation-car-drive-road.jpg" alt="" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-black/60"></div>
+    </div>
+    <div class="relative max-w-3xl mx-auto">
+      <h2 class="font-mono text-xl font-bold text-white mb-6">Comment venir ?</h2>
+      <div class="space-y-4">
+
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-white">
+          <h3 class="font-mono font-bold mb-2">🚗 Depuis Bordeaux</h3>
+          <a href="https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=44.8412%2C-0.5800%3B44.08022%2C0.27833"
+             target="_blank" rel="noopener"
+             class="text-white/70 hover:text-white hover:underline text-sm font-medium transition-colors">
+            Itinéraire sur OpenStreetMap ↗
+          </a>
+        </div>
+
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-white">
+          <h3 class="font-mono font-bold mb-2">🚗 Depuis Toulouse</h3>
+          <a href="https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=43.6047%2C1.4442%3B44.08022%2C0.27833"
+             target="_blank" rel="noopener"
+             class="text-white/70 hover:text-white hover:underline text-sm font-medium transition-colors">
+            Itinéraire sur OpenStreetMap ↗
+          </a>
+        </div>
+
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-white">
+          <h3 class="font-mono font-bold mb-3">🚂 En train</h3>
+          <p class="text-white/60 text-sm mb-2">Deux options de gare :</p>
+          <ul class="text-white/70 text-sm space-y-1 list-disc list-inside">
+            <li>TGV / Intercité jusqu'à <strong class="text-white">Agen</strong></li>
+            <li>TER jusqu'à <strong class="text-white">Aiguillon</strong></li>
+          </ul>
+          <p class="text-white/40 text-sm mt-3 italic">Une âme charitable viendra vous récupérer.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
 
 </Layout>
