@@ -17,7 +17,9 @@ const links = [
         Slick Lough #{EVENT.edition}
       </span>
       <span class="hidden sm:inline text-gray-400 mx-2">·</span>
-      <span class="block sm:inline text-sm text-gray-500">{EVENT.date} — {EVENT.lieu}</span>
+      <span class="block sm:inline text-sm text-gray-500">
+        {EVENT.date} — <a href={EVENT.mapsUrl} target="_blank" rel="noopener" class="hover:text-vert transition-colors">{EVENT.lieu}</a>
+      </span>
     </div>
     <div class="flex gap-3 flex-wrap justify-center">
       {links.map(({ href, label }) => {

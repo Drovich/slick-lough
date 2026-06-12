@@ -6,49 +6,51 @@ import marioImg from '../assets/images/mario.png';
 
 <Layout title="Tournoi MK-World #3" description="Tournoi Mario Kart — Slick Lough">
 
-  <div class="page-container max-w-3xl">
-    <div class="flex items-center gap-4 mb-8">
-      <Image src={marioImg} alt="Mario Kart" class="w-14 h-14 object-contain" />
-      <h1 class="page-title mb-0">Tournoi MK-World #3</h1>
-    </div>
+  <div class="relative min-h-screen">
+    <Image src={marioImg} alt="" class="absolute inset-0 w-full h-full object-cover" />
+    <div class="absolute inset-0 bg-black/70"></div>
 
-    <div class="card mb-6">
-      <p class="text-gray-700 leading-relaxed">
-        Les matchs sont organisés <strong>le soir</strong> à partir d'une liste de participants inscrits.
-        Que lae meilleur·e gagne !
-      </p>
-    </div>
+    <div class="relative page-container max-w-3xl">
+      <h1 class="font-mono text-3xl md:text-4xl font-bold text-white mb-8">Tournoi MK-World #3</h1>
 
-    <div class="grid sm:grid-cols-2 gap-6">
-
-      <div class="card">
-        <h2 class="font-mono font-bold text-vert mb-3">🏎️ Format</h2>
-        <ul class="text-gray-700 text-sm space-y-2 list-disc list-inside">
-          <li>Poules de 4 joueurs·euses</li>
-          <li>5 courses par poule</li>
-          <li>Les 2 premiers·ères de chaque poule se qualifient</li>
-          <li>Finale au meilleur des 7 courses</li>
-        </ul>
-        <p class="text-gray-500 text-xs mt-3 italic">Format susceptible d'évoluer.</p>
-      </div>
-
-      <div class="card">
-        <h2 class="font-mono font-bold text-vert mb-3">🏆 Récompense</h2>
-        <p class="text-gray-700 text-sm leading-relaxed">
-          Un superbe CashPrize sera attribué à la personne gagnante de l'épreuve.
-          Celle-ci sera désignée par une loterie pondérée en fonction des résultats.
-          Chaque place obtenue double ses chances de remporter le CashPrize.
+      <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-6">
+        <p class="text-white/80 leading-relaxed">
+          Les matchs sont organisés <strong class="text-white">le soir</strong> à partir d'une liste de participants inscrits.
+          Que lae meilleur·e gagne !
         </p>
       </div>
 
-      <div class="card sm:col-span-2">
-        <h2 class="font-mono font-bold text-vert mb-3">📋 Règles</h2>
-        <p class="text-gray-700 text-sm">
-          Les organisateurs·rices comptent sur <em>l'honnêteté des inscrit·es</em>.
-          En cas de litige, on donnera raison à celui·celle qui entretient les meilleures relations avec les organisateurs·rices.
-        </p>
-      </div>
+      <div class="grid sm:grid-cols-2 gap-6">
 
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+          <h2 class="font-mono font-bold text-white mb-3">🏎️ Format</h2>
+          <ul class="text-white/80 text-sm space-y-2 list-disc list-inside">
+            <li>Poules de 4 joueurs·euses</li>
+            <li>5 courses par poule</li>
+            <li>Les 2 premiers·ères de chaque poule se qualifient</li>
+            <li>Finale au meilleur des 7 courses</li>
+          </ul>
+          <p class="text-white/40 text-xs mt-3 italic">Format susceptible d'évoluer.</p>
+        </div>
+
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+          <h2 class="font-mono font-bold text-white mb-3">🏆 Récompense</h2>
+          <p class="text-white/80 text-sm leading-relaxed">
+            Un superbe Lot sera attribué à la personne gagnante de l'épreuve.
+            Celle-ci sera désignée par une loterie pondérée en fonction des résultats.
+            Chaque place obtenue double ses chances de remporter le Lot.
+          </p>
+        </div>
+
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 sm:col-span-2">
+          <h2 class="font-mono font-bold text-white mb-3">📋 Règles</h2>
+          <p class="text-white/80 text-sm">
+            Les organisateurs·rices comptent sur <em>l'honnêteté des inscrit·es</em>.
+            En cas de litige, on donnera raison à celui·celle qui entretient les meilleures relations avec les organisateurs·rices.
+          </p>
+        </div>
+
+      </div>
     </div>
   </div>
 

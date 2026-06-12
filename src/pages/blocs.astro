@@ -4,44 +4,49 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="Tournoi de Blocs #3" description="Tournoi d'escalade de blocs — Slick Lough">
 
-  <div class="page-container max-w-3xl">
-    <h1 class="page-title">Tournoi de Blocs #3</h1>
+  <div class="relative min-h-screen">
+    <img src="/images/photo_5846120415016106531_y.jpg" alt="" class="absolute inset-0 w-full h-full object-cover" />
+    <div class="absolute inset-0 bg-black/65"></div>
 
-    <div class="card mb-6">
-      <p class="text-gray-700 leading-relaxed">
-        La compétition se déroule <strong>pendant l'après-midi</strong>.
-        Grimpeurs·euses confirmé·es ou débutant·es curieux·ses, venez vous mesurer sur les blocs du site de Lisse Lac.
-        Que lae meilleure gagne !
-      </p>
-    </div>
+    <div class="relative page-container max-w-3xl">
+      <h1 class="font-mono text-3xl md:text-4xl font-bold text-white mb-8">Tournoi de Blocs #3</h1>
 
-    <div class="grid sm:grid-cols-2 gap-6">
-
-      <div class="card">
-        <h2 class="font-mono font-bold text-vert mb-3">🧗 Format</h2>
-        <p class="text-gray-700 text-sm leading-relaxed">
-          Plusieurs blocs à réaliser. Chaque bloc réussi rapporte des points.
-          Le nombre de points par bloc dépend du nombre de personnes ayant réussi ce bloc —
-          plus un bloc est difficile, plus il rapporte.
+      <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-6">
+        <p class="text-white/80 leading-relaxed">
+          La compétition se déroule <strong class="text-white">pendant l'après-midi</strong>.
+          Grimpeurs·euses confirmé·es ou débutant·es curieux·ses, venez vous mesurer sur les blocs du site de Lisse Lac.
+          Que lae meilleure gagne !
         </p>
       </div>
 
-      <div class="card">
-        <h2 class="font-mono font-bold text-vert mb-3">🏆 Récompense</h2>
-        <p class="text-gray-700 text-sm leading-relaxed">
-          Un superbe CashPrize sera attribué à la personne gagnante de l'épreuve.
-          Celle-ci sera désignée par une loterie pondérée en fonction des résultats.
-          Chaque place obtenue double ses chances de remporter le CashPrize.
-        </p>
-      </div>
+      <div class="grid sm:grid-cols-2 gap-6">
 
-      <div class="card sm:col-span-2">
-        <h2 class="font-mono font-bold text-vert mb-3">👟 Matériel</h2>
-        <p class="text-gray-700 text-sm">
-          Des chaussons d'escalade sont recommandés. Renseignements sur place.
-        </p>
-      </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+          <h2 class="font-mono font-bold text-white mb-3">🧗 Format</h2>
+          <p class="text-white/80 text-sm leading-relaxed">
+            Plusieurs blocs à réaliser. Chaque bloc réussi rapporte des points.
+            Le nombre de points par bloc dépend du nombre de personnes ayant réussi ce bloc —
+            plus un bloc est difficile, plus il rapporte.
+          </p>
+        </div>
 
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+          <h2 class="font-mono font-bold text-white mb-3">🏆 Récompense</h2>
+          <p class="text-white/80 text-sm leading-relaxed">
+            Un superbe Lot sera attribué à la personne gagnante de l'épreuve.
+            Celle-ci sera désignée par une loterie pondérée en fonction des résultats.
+            Chaque place obtenue double ses chances de remporter le Lot.
+          </p>
+        </div>
+
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 sm:col-span-2">
+          <h2 class="font-mono font-bold text-white mb-3">👟 Matériel</h2>
+          <p class="text-white/80 text-sm">
+            Des chaussons d'escalade et de la magnésie seront mis à disposition gracieusement. Chaussons personnel autorisé et recommandé.
+          </p>
+        </div>
+
+      </div>
     </div>
   </div>
 

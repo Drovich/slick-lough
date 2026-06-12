@@ -35,7 +35,7 @@ const isHome = Astro.url.pathname === '/';
   </head>
   <body class="bg-fond text-gray-800 min-h-screen flex flex-col">
     <Header />
-    {showBanner && !isHome && <PageBanner />}
+    {showBanner && <PageBanner />}
     <main class="flex-1">
       <slot />
     </main>
