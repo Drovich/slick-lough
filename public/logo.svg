@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <!-- Arc du haut : sens horaire, gauche → haut → droite -->
+    <path id="top-arc" d="M 37,100 A 63,63 0 0,1 163,100"/>
+    <!-- Arc du bas : sens anti-horaire, gauche → bas → droite -->
+    <path id="bottom-arc" d="M 37,100 A 63,63 0 0,0 163,100"/>
+  </defs>
+
+  <!-- Cercle de fond -->
+  <circle cx="100" cy="100" r="96" fill="#35845d"/>
+
+  <!-- Monogramme central en blanc -->
+  <text x="100" y="115" text-anchor="middle"
+        font-family="monospace"
+        font-weight="bold" font-size="64" fill="white">SL</text>
+
+  <!-- SLICK LOUGH en arc du haut, bleu -->
+  <text font-family="'Space Mono', 'Courier New', monospace"
+        font-weight="700" font-size="12" fill="#5BB8E0" letter-spacing="3">
+    <textPath href="#top-arc" startOffset="50%" text-anchor="middle">SLICK LOUGH</textPath>
+  </text>
+
+  <!-- LISSE LAC en arc du bas, bleu -->
+  <text font-family="'Space Mono', 'Courier New', monospace"
+        font-weight="700" font-size="12" fill="#5BB8E0" letter-spacing="3">
+    <textPath href="#bottom-arc" startOffset="50%" text-anchor="middle">LISSE LAC</textPath>
+  </text>
+</svg>
