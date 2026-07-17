@@ -1,4 +1,4 @@
-// ⬇️ Modifier ce fichier chaque année pour mettre à jour l'édition
+// ⬇️ Update this file each year for the new edition
 export const EVENT = {
   edition: 6,
   subtitle: "6e édition de l'évènement estival préféré des français·es",

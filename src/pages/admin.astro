@@ -1,0 +1,393 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Administration" description="Administration — Slick Lough">
+  <div class="page-container max-w-3xl">
+
+    <!-- ── Admin login ─────────────────────────────────────────────── -->
+    <div id="login-section">
+      <h1 class="page-title">Administration</h1>
+      <div class="card max-w-sm">
+        <div id="login-error" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-2 mb-4"></div>
+        <form id="login-form" class="space-y-4">
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe admin</label>
+            <input type="password" id="password" required
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-vert/50" />
+          </div>
+          <button type="submit" class="w-full bg-vert text-white font-semibold py-2 rounded-lg hover:bg-vert/90 transition-colors text-sm">
+            Connexion admin
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ── Admin interface ─────────────────────────────────────────── -->
+    <div id="admin-section" class="hidden space-y-8">
+      <div class="flex items-center justify-between">
+        <h1 class="page-title mb-0">Administration</h1>
+        <button id="logout-btn" class="text-xs text-gray-400 hover:text-red-500 transition-colors">Se déconnecter</button>
+      </div>
+
+      <!-- ── Blocs management ─────────────────────────────────────── -->
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert mb-4">Gestion des blocs</h2>
+        <div id="admin-blocs-msg" class="hidden text-sm rounded-lg px-4 py-2 mb-4"></div>
+        <div id="admin-blocs-list" class="space-y-3 mb-6"></div>
+
+        <div class="border-t border-gray-100 pt-4">
+          <h3 class="text-sm font-semibold text-gray-600 mb-3" id="bloc-form-title">Ajouter un bloc</h3>
+          <input type="hidden" id="edit-bloc-id" />
+          <div class="grid sm:grid-cols-2 gap-3 mb-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Nom</label>
+              <input type="text" id="bloc-name" placeholder="Bloc 1"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-vert/50" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Couleur / description</label>
+              <input type="text" id="bloc-color" placeholder="Vert foncé"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-vert/50" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Points</label>
+              <input type="number" id="bloc-points" placeholder="1000" min="1"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-vert/50" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Photo (fichier ou appareil photo)</label>
+              <input type="file" id="bloc-photo" accept="image/*"
+                class="w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:bg-vert/10 file:text-vert hover:file:bg-vert/20 file:cursor-pointer" />
+              <p id="bloc-photo-status" class="text-xs text-gray-400 mt-1 hidden"></p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button id="save-bloc-btn" class="bg-vert text-white font-semibold px-5 py-2 rounded-lg hover:bg-vert/90 transition-colors text-sm">
+              Enregistrer le bloc
+            </button>
+            <button id="cancel-edit-btn" class="hidden text-sm text-gray-500 px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+              Annuler
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Blocs ranking manual override ───────────────────────── -->
+      <div class="card">
+        <h2 class="font-mono font-bold text-vert mb-1">Classement blocs — override manuel</h2>
+        <p class="text-xs text-gray-400 mb-4">Quand un override est actif, il remplace le calcul automatique sur la page Résultats.</p>
+        <div id="override-status" class="mb-4 text-sm font-medium"></div>
+        <div id="override-msg" class="hidden text-sm rounded-lg px-4 py-2 mb-4"></div>
+        <div id="override-table" class="space-y-2 mb-4"></div>
+        <div class="flex gap-2 flex-wrap">
+          <button id="load-auto-btn" class="text-sm bg-gray-100 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">Charger le classement auto</button>
+          <button id="save-override-btn" class="text-sm bg-vert text-white px-4 py-2 rounded-lg hover:bg-vert/90 transition-colors">Activer cet override</button>
+          <button id="clear-override-btn" class="text-sm bg-red-50 text-red-500 border border-red-200 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors">Supprimer l'override</button>
+        </div>
+      </div>
+
+      <!-- ── Participants ──────────────────────────────────────────── -->
+      <div id="participants-section" class="card">
+        <h2 class="font-mono font-bold text-vert mb-1">Participants inscrits</h2>
+        <p class="text-xs text-gray-400 mb-4">⛔ = exclu du tirage au sort (organisateurs, etc.)</p>
+        <div id="participants-msg" class="hidden text-sm rounded-lg px-4 py-2 mb-4"></div>
+        <div id="participants-list" class="space-y-2"></div>
+      </div>
+
+      <p class="text-center">
+        <a href="/resultats" class="text-sm text-vert hover:underline">← Retour aux résultats</a>
+      </p>
+    </div>
+
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../lib/supabase';
+  import { sha256, getSession, setSession, clearSession } from '../lib/session';
+  import { esc } from '../lib/utils';
+  import { computeBlocsScores } from '../lib/ranking';
+
+  const adminHash   = import.meta.env.PUBLIC_ADMIN_PASSWORD_HASH;
+  const arbitreHash = import.meta.env.PUBLIC_ARBITRE_PASSWORD_HASH;
+
+  function showMsg(el, text, isError = false) {
+    el.textContent = text;
+    el.className = `text-sm rounded-lg px-4 py-2 mb-4 ${isError
+      ? 'bg-red-50 border border-red-200 text-red-700'
+      : 'bg-green-50 border border-green-200 text-green-700'}`;
+    el.classList.remove('hidden');
+    setTimeout(() => el.classList.add('hidden'), 5000);
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────
+  function init() {
+    const session = getSession();
+    if (session?.role === 'admin' || session?.role === 'arbitre') showAdmin(session.role);
+    else document.getElementById('login-section').classList.remove('hidden');
+  }
+
+  function showAdmin(role = 'admin') {
+    document.getElementById('login-section').classList.add('hidden');
+    document.getElementById('admin-section').classList.remove('hidden');
+    // Participants section (blacklist toggles) is admin-only
+    const participantsSection = document.getElementById('participants-section');
+    if (participantsSection) participantsSection.classList.toggle('hidden', role !== 'admin');
+    renderAdminBlocsList();
+    renderOverrideSection();
+    if (role === 'admin') renderParticipantsList();
+  }
+
+  document.getElementById('login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const hash = await sha256(document.getElementById('password').value);
+    const errEl = document.getElementById('login-error');
+    let role = null;
+    if (hash === adminHash)        role = 'admin';
+    else if (hash === arbitreHash) role = 'arbitre';
+    if (!role) {
+      errEl.textContent = 'Mot de passe incorrect.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    errEl.classList.add('hidden');
+    const existing = getSession();
+    setSession({ username: existing?.username ?? role, role });
+    showAdmin(role);
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', () => { clearSession(); location.reload(); });
+
+  // ── Blocs CRUD ────────────────────────────────────────────────────
+  let editingBlocId = null;
+
+  async function renderAdminBlocsList() {
+    const { data } = await supabase.from('blocs').select('*').order('id');
+    const list = document.getElementById('admin-blocs-list');
+    if (!data?.length) {
+      list.innerHTML = '<p class="text-gray-400 text-sm">Aucun bloc. Utilise le formulaire ci-dessous.</p>';
+      return;
+    }
+    list.innerHTML = data.map(b => `
+      <div class="flex items-center gap-3 p-3 rounded-lg border border-gray-200">
+        ${b.photo_url
+          ? `<img src="${esc(b.photo_url)}" alt="${esc(b.name)}" class="w-12 h-12 object-cover rounded-md shrink-0"/>`
+          : '<div class="w-12 h-12 rounded-md bg-gray-100 shrink-0 flex items-center justify-center text-gray-300 text-lg">🪨</div>'}
+        <div class="flex-1 min-w-0">
+          <span class="font-medium text-sm">${esc(b.name)}</span>
+          <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">${esc(b.color)}</span>
+          <span class="ml-1 text-xs text-gray-400 font-mono">${b.points} pts</span>
+        </div>
+        <button data-edit="${b.id}" class="text-xs text-vert border border-vert/30 px-2 py-1 rounded-md hover:bg-vert/5 transition-colors">Modifier</button>
+        <button data-delete="${b.id}" class="text-xs text-red-400 border border-red-200 px-2 py-1 rounded-md hover:bg-red-50 transition-colors">Supprimer</button>
+      </div>`).join('');
+
+    list.querySelectorAll('[data-edit]').forEach(btn =>
+      btn.addEventListener('click', () => startEditBloc(parseInt(btn.dataset.edit), data)));
+    list.querySelectorAll('[data-delete]').forEach(btn =>
+      btn.addEventListener('click', () => deleteBloc(parseInt(btn.dataset.delete))));
+  }
+
+  function startEditBloc(id, data) {
+    const b = data.find(x => x.id === id);
+    if (!b) return;
+    editingBlocId = id;
+    document.getElementById('edit-bloc-id').value           = id;
+    document.getElementById('bloc-name').value              = b.name;
+    document.getElementById('bloc-color').value             = b.color;
+    document.getElementById('bloc-points').value            = b.points;
+    document.getElementById('bloc-form-title').textContent  = `Modifier "${b.name}"`;
+    document.getElementById('cancel-edit-btn').classList.remove('hidden');
+    document.getElementById('save-bloc-btn').textContent = 'Mettre à jour';
+    document.getElementById('save-bloc-btn').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function cancelEdit() {
+    editingBlocId = null;
+    ['edit-bloc-id', 'bloc-name', 'bloc-color', 'bloc-points'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('bloc-photo').value = '';
+    document.getElementById('bloc-photo-status').classList.add('hidden');
+    document.getElementById('bloc-form-title').textContent = 'Ajouter un bloc';
+    document.getElementById('cancel-edit-btn').classList.add('hidden');
+    document.getElementById('save-bloc-btn').textContent = 'Enregistrer le bloc';
+  }
+  document.getElementById('cancel-edit-btn').addEventListener('click', cancelEdit);
+
+  async function deleteBloc(id) {
+    if (!confirm('Supprimer ce bloc et tous ses résultats ?')) return;
+    const { data } = await supabase.from('blocs').select('photo_url').eq('id', id).single();
+    if (data?.photo_url) {
+      const path = data.photo_url.split('/blocs-photos/')[1];
+      if (path) await supabase.storage.from('blocs-photos').remove([path]);
+    }
+    await supabase.from('blocs').delete().eq('id', id);
+    renderAdminBlocsList();
+    showMsg(document.getElementById('admin-blocs-msg'), 'Bloc supprimé.', false);
+  }
+
+  // Downscale the photo client-side before upload — phone photos are several
+  // MB but only ever shown as small thumbnails
+  async function resizeImage(file, maxSize = 800) {
+    try {
+      const bitmap = await createImageBitmap(file);
+      const scale = Math.min(1, maxSize / Math.max(bitmap.width, bitmap.height));
+      if (scale === 1) return file;
+      const canvas = document.createElement('canvas');
+      canvas.width  = Math.round(bitmap.width * scale);
+      canvas.height = Math.round(bitmap.height * scale);
+      canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.85));
+      return blob || file;
+    } catch {
+      return file; // unsupported format → upload as-is
+    }
+  }
+
+  document.getElementById('save-bloc-btn').addEventListener('click', async () => {
+    const name      = document.getElementById('bloc-name').value.trim();
+    const color     = document.getElementById('bloc-color').value.trim();
+    const points    = parseInt(document.getElementById('bloc-points').value || '1000', 10);
+    const photoFile = document.getElementById('bloc-photo').files?.[0];
+    const msg       = document.getElementById('admin-blocs-msg');
+    if (!name) { showMsg(msg, 'Le nom est requis.', true); return; }
+
+    let photo_url;
+    if (photoFile) {
+      const statusEl = document.getElementById('bloc-photo-status');
+      statusEl.textContent = 'Upload en cours…';
+      statusEl.classList.remove('hidden');
+      const upload = await resizeImage(photoFile);
+      const ext = upload.type === 'image/jpeg' ? 'jpg' : (photoFile.name.split('.').pop() || 'jpg');
+      const filename = `bloc-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from('blocs-photos')
+        .upload(filename, upload, { upsert: true, contentType: upload.type || photoFile.type });
+      if (upErr) { showMsg(msg, 'Erreur upload : ' + upErr.message, true); return; }
+      photo_url = supabase.storage.from('blocs-photos').getPublicUrl(filename).data.publicUrl;
+      statusEl.textContent = 'Photo uploadée ✓';
+      // Remove the previous photo when replacing it
+      if (editingBlocId) {
+        const { data: old } = await supabase.from('blocs').select('photo_url').eq('id', editingBlocId).single();
+        if (old?.photo_url) {
+          const oldPath = old.photo_url.split('/blocs-photos/')[1];
+          if (oldPath) await supabase.storage.from('blocs-photos').remove([oldPath]);
+        }
+      }
+    }
+
+    const payload = { name, color, points, ...(photo_url !== undefined ? { photo_url } : {}) };
+    const { error } = editingBlocId
+      ? await supabase.from('blocs').update(payload).eq('id', editingBlocId)
+      : await supabase.from('blocs').insert(payload);
+
+    if (error) { showMsg(msg, 'Erreur : ' + error.message, true); return; }
+    showMsg(msg, editingBlocId ? 'Bloc mis à jour !' : 'Bloc ajouté !', false);
+    cancelEdit();
+    renderAdminBlocsList();
+  });
+
+  // ── Manual override for the blocs ranking ─────────────────────────
+  async function computeAutoRanking() {
+    const [{ data: res }, { data: bl }] = await Promise.all([
+      supabase.from('results_blocs').select('participant_username,bloc_id,topped'),
+      supabase.from('blocs').select('id,points'),
+    ]);
+    const scores = computeBlocsScores(bl || [], res || []);
+    return Object.entries(scores).sort(([, a], [, b]) => b - a)
+      .map(([username, score], i) => ({ username, score: Math.round(score), position: i + 1 }));
+  }
+
+  async function renderOverrideSection() {
+    const { data } = await supabase.from('blocs_override').select('*').order('position');
+    const statusEl = document.getElementById('override-status');
+    if (data?.length) {
+      statusEl.innerHTML = '<span class="text-vert">Override actif</span> — classement manuel utilisé.';
+      renderOverrideTable(data.map(r => ({ username: r.participant_username, position: r.position })));
+    } else {
+      statusEl.innerHTML = '<span class="text-gray-400">Aucun override</span> — classement automatique utilisé.';
+      document.getElementById('override-table').innerHTML = '<p class="text-gray-400 text-sm">Clique sur "Charger le classement auto" pour l\'éditer.</p>';
+    }
+  }
+
+  function renderOverrideTable(rows) {
+    document.getElementById('override-table').innerHTML = rows.map((r, i) => `
+      <div class="flex items-center gap-3">
+        <span class="text-sm text-gray-400 w-6 text-right">${i + 1}.</span>
+        <span class="flex-1 text-sm font-medium">${esc(r.username)}</span>
+        <input type="number" min="1" data-override-user="${esc(r.username)}" value="${r.position}"
+          class="w-16 border border-gray-300 rounded-lg px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-vert/50 override-pos-input" />
+      </div>`).join('');
+  }
+
+  document.getElementById('load-auto-btn').addEventListener('click', async () => {
+    const ranking = await computeAutoRanking();
+    if (!ranking.length) { showMsg(document.getElementById('override-msg'), 'Aucun résultat de blocs.', true); return; }
+    renderOverrideTable(ranking);
+  });
+
+  document.getElementById('save-override-btn').addEventListener('click', async () => {
+    const inputs = document.querySelectorAll('.override-pos-input');
+    if (!inputs.length) { showMsg(document.getElementById('override-msg'), 'Charge d\'abord le classement auto.', true); return; }
+    const rows = [...inputs].map(inp => ({ participant_username: inp.dataset.overrideUser, position: parseInt(inp.value, 10) })).filter(r => r.position > 0);
+    await supabase.from('blocs_override').delete().neq('participant_username', '');
+    const { error } = await supabase.from('blocs_override').insert(rows);
+    const msg = document.getElementById('override-msg');
+    if (error) { showMsg(msg, 'Erreur : ' + error.message, true); return; }
+    showMsg(msg, 'Override actif !', false);
+    renderOverrideSection();
+  });
+
+  document.getElementById('clear-override-btn').addEventListener('click', async () => {
+    if (!confirm('Supprimer l\'override ?')) return;
+    await supabase.from('blocs_override').delete().neq('participant_username', '');
+    showMsg(document.getElementById('override-msg'), 'Override supprimé.', false);
+    renderOverrideSection();
+  });
+
+  // ── Participants list ─────────────────────────────────────────────
+  async function renderParticipantsList() {
+    const { data } = await supabase.from('participants').select('*').order('username');
+    const el = document.getElementById('participants-list');
+    if (!data?.length) { el.innerHTML = '<p class="text-gray-400 text-sm">Aucun participant inscrit.</p>'; return; }
+    el.innerHTML = data.map(p => `
+      <div class="flex items-center gap-2 py-2 border-b border-gray-100 last:border-0">
+        <span class="flex-1 text-sm font-medium">${esc(p.username)}</span>
+        <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">${p.gender ?? '?'}</span>
+        ${p.atelier ? '<span class="text-xs text-amber-500" title="A participé à un atelier">★</span>' : ''}
+        <button data-blacklist="${esc(p.username)}" data-is="${p.blacklisted ? '1' : '0'}"
+          class="text-xs px-2 py-1 rounded-md border transition-colors ${p.blacklisted
+            ? 'text-red-500 border-red-300 bg-red-50 hover:bg-red-100'
+            : 'text-gray-400 border-gray-200 hover:text-red-400 hover:border-red-200'}"
+          title="${p.blacklisted ? 'Retirer de la blacklist' : 'Blacklister (exclu du tirage)'}">
+          ${p.blacklisted ? '⛔ Blacklisté' : '⛔'}
+        </button>
+        <button data-del="${esc(p.username)}" class="text-xs text-red-400 border border-red-200 px-2 py-1 rounded-md hover:bg-red-50 transition-colors">Supprimer</button>
+      </div>`).join('');
+
+    el.querySelectorAll('[data-blacklist]').forEach(btn => btn.addEventListener('click', async () => {
+      const username = btn.dataset.blacklist;
+      const current  = btn.dataset.is === '1';
+      if (current && !confirm(`Retirer "${username}" de la blacklist ?`)) return;
+      btn.disabled = true;
+      btn.textContent = '…';
+      const { error } = await supabase.from('participants').update({ blacklisted: !current }).eq('username', username);
+      if (error) {
+        showMsg(document.getElementById('participants-msg'), 'Erreur blacklist : ' + error.message, true);
+        btn.disabled = false;
+        renderParticipantsList();
+        return;
+      }
+      showMsg(document.getElementById('participants-msg'),
+        current ? `${username} retiré de la blacklist.` : `${username} ajouté à la blacklist — exclu du tirage.`, false);
+      renderParticipantsList();
+    }));
+
+    el.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', async () => {
+      if (!confirm(`Supprimer "${btn.dataset.del}" ?`)) return;
+      await supabase.from('participants').delete().eq('username', btn.dataset.del);
+      renderParticipantsList();
+    }));
+  }
+
+  init();
+</script>

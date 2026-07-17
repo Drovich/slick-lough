@@ -26,6 +26,12 @@ jobs:
 
       - name: Build Astro
         run: npm run build
+        env:
+          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+          PUBLIC_PARTICIPANT_PASSWORD_HASH: ${{ secrets.PUBLIC_PARTICIPANT_PASSWORD_HASH }}
+          PUBLIC_ARBITRE_PASSWORD_HASH: ${{ secrets.PUBLIC_ARBITRE_PASSWORD_HASH }}
+          PUBLIC_ADMIN_PASSWORD_HASH: ${{ secrets.PUBLIC_ADMIN_PASSWORD_HASH }}
 
       - name: Déploie vers OVH via FTP
         run: |
@@ -34,6 +40,5 @@ jobs:
             set ssl:verify-certificate no;
             set ftp:passive-mode on;
             open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' '${{ secrets.FTP_SERVER }}';
-            rm -rf /www/_astro/;
             mirror --reverse --delete --verbose --parallel=4 dist/ /www/;
           "
