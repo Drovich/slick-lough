@@ -302,13 +302,19 @@ import Layout from '../layouts/Layout.astro';
   }
 
   // ── Ranking tabs ──────────────────────────────────────────────────
-  document.querySelectorAll('.res-tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.res-tab-btn').forEach(b => b.setAttribute('aria-selected', String(b === btn)));
-      document.querySelectorAll('.res-tab-content').forEach(t => t.classList.add('hidden'));
-      document.getElementById('res-tab-' + btn.dataset.tab)?.classList.remove('hidden');
-    });
-  });
+  function activateTab(btn) {
+    document.querySelectorAll('.res-tab-btn').forEach(b => b.setAttribute('aria-selected', String(b === btn)));
+    document.querySelectorAll('.res-tab-content').forEach(t => t.classList.add('hidden'));
+    document.getElementById('res-tab-' + btn.dataset.tab)?.classList.remove('hidden');
+  }
+  document.querySelectorAll('.res-tab-btn').forEach(btn => btn.addEventListener('click', () => activateTab(btn)));
+
+  // Deep-link support: /resultats#mk (used by the mario-kart/trail/blocs pages)
+  // opens directly on that tab instead of the Trail default
+  if (location.hash) {
+    const hashTab = document.querySelector(`.res-tab-btn[data-tab="${CSS.escape(location.hash.slice(1))}"]`);
+    if (hashTab) activateTab(hashTab);
+  }
 
   // ── Table renderers ───────────────────────────────────────────────
   function rankTable(rows, myUsername = null) {
