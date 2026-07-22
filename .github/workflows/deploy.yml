@@ -28,10 +28,7 @@ jobs:
         run: npm run build
         env:
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
-          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
-          PUBLIC_PARTICIPANT_PASSWORD_HASH: ${{ secrets.PUBLIC_PARTICIPANT_PASSWORD_HASH }}
-          PUBLIC_ARBITRE_PASSWORD_HASH: ${{ secrets.PUBLIC_ARBITRE_PASSWORD_HASH }}
-          PUBLIC_ADMIN_PASSWORD_HASH: ${{ secrets.PUBLIC_ADMIN_PASSWORD_HASH }}
+          PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
 
       - name: Déploie vers OVH via FTP
         run: |

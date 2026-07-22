@@ -208,6 +208,14 @@ import Layout from '../layouts/Layout.astro';
           <div id="login-error" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-2 mb-4"></div>
           <form id="login-form" class="space-y-3">
             <div>
+              <label for="login-role" class="block text-xs font-medium text-gray-600 mb-1">Je me connecte en tant que</label>
+              <select id="login-role" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-vert/50">
+                <option value="participant" selected>Participant</option>
+                <option value="arbitre">Arbitre</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div>
               <label for="username" class="block text-xs font-medium text-gray-600 mb-1">Prénom / pseudo</label>
               <input type="text" id="username" required autocomplete="off" placeholder="ex. Camille"
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-vert/50" />
@@ -261,17 +269,13 @@ import Layout from '../layouts/Layout.astro';
 
 <script>
   import { supabase } from '../lib/supabase';
-  import { sha256, getSession, setSession, clearSession } from '../lib/session';
+  import { login, getSession, clearSession } from '../lib/session';
   import { esc, safeId } from '../lib/utils';
   import {
     withTiePos, toMidRanks, lotteryProbs, computeAdjusted, computeCombined, computeBlocsScores,
   } from '../lib/ranking';
   import { weightedRandom, resolveGroupDraw } from '../lib/lottery';
   import { generateBracket, propagateMatchResults, swapBracketPlayers } from '../lib/bracket';
-
-  const participantHash = import.meta.env.PUBLIC_PARTICIPANT_PASSWORD_HASH;
-  const arbitreHash     = import.meta.env.PUBLIC_ARBITRE_PASSWORD_HASH;
-  const adminHash       = import.meta.env.PUBLIC_ADMIN_PASSWORD_HASH;
 
   // ── State ─────────────────────────────────────────────────────────
   const COMBINED_CATEGORIES = ['vitesse', 'sportif', 'technique', 'super_combine'];
@@ -1031,18 +1035,31 @@ import Layout from '../layouts/Layout.astro';
     panel.classList.remove('hidden');
   }
 
+  // Each lock button writes both to competition_config (drives the UI banner
+  // via isLocked()) and to role_locks (the real, RLS-enforced lock — this is
+  // what actually blocks writes at the database level).
   document.getElementById('lock-participants-btn')?.addEventListener('click', async () => {
-    await supabase.from('competition_config').upsert({ key: 'admin_lock', value: 'participants' }, { onConflict: 'key' });
+    await Promise.all([
+      supabase.from('competition_config').upsert({ key: 'admin_lock', value: 'participants' }, { onConflict: 'key' }),
+      supabase.from('role_locks').update({ locked: true }).eq('role', 'participant'),
+      supabase.from('role_locks').update({ locked: false }).eq('role', 'arbitre'),
+    ]);
     await loadAll();
   });
 
   document.getElementById('lock-all-btn')?.addEventListener('click', async () => {
-    await supabase.from('competition_config').upsert({ key: 'admin_lock', value: 'all' }, { onConflict: 'key' });
+    await Promise.all([
+      supabase.from('competition_config').upsert({ key: 'admin_lock', value: 'all' }, { onConflict: 'key' }),
+      supabase.from('role_locks').update({ locked: true }).in('role', ['participant', 'arbitre']),
+    ]);
     await loadAll();
   });
 
   document.getElementById('unlock-btn')?.addEventListener('click', async () => {
-    await supabase.from('competition_config').delete().eq('key', 'admin_lock');
+    await Promise.all([
+      supabase.from('competition_config').delete().eq('key', 'admin_lock'),
+      supabase.from('role_locks').update({ locked: false }).in('role', ['participant', 'arbitre']),
+    ]);
     await loadAll();
   });
 
@@ -1150,30 +1167,25 @@ import Layout from '../layouts/Layout.astro';
   // ── Login ─────────────────────────────────────────────────────────
   document.getElementById('login-form').addEventListener('submit', async e => {
     e.preventDefault();
+    const role     = document.getElementById('login-role').value;
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
     const errEl    = document.getElementById('login-error');
 
     if (!username) { errEl.textContent = 'Entre ton prénom.'; errEl.classList.remove('hidden'); return; }
 
-    const hash = await sha256(password);
-    let role = null;
-    if (hash === adminHash)            role = 'admin';
-    else if (hash === arbitreHash)     role = 'arbitre';
-    else if (hash === participantHash) role = 'participant';
-
-    if (!role) { errEl.textContent = 'Mot de passe incorrect.'; errEl.classList.remove('hidden'); return; }
+    const result = await login(role, username, password);
+    if (!result.ok) { errEl.textContent = result.error; errEl.classList.remove('hidden'); return; }
     errEl.classList.add('hidden');
 
     if (role === 'participant') await ensureParticipant(username);
 
-    setSession({ username, role });
     showEditSection({ username, role });
     renderStandings();
   });
 
-  document.getElementById('logout-btn').addEventListener('click', () => { clearSession(); location.reload(); });
-  document.getElementById('bottom-logout-btn')?.addEventListener('click', () => { clearSession(); location.reload(); });
+  document.getElementById('logout-btn').addEventListener('click', async () => { await clearSession(); location.reload(); });
+  document.getElementById('bottom-logout-btn')?.addEventListener('click', async () => { await clearSession(); location.reload(); });
 
   // Creates the participant if unknown (the 200 cap is enforced by a DB trigger)
   async function ensureParticipant(username) {
@@ -1474,15 +1486,19 @@ import Layout from '../layouts/Layout.astro';
     await loadAll();
   });
 
-  document.getElementById('mk-add-participant-btn')?.addEventListener('click', async () => {
-    const hidden = document.getElementById('mk-add-hidden');
-    const input  = document.getElementById('mk-add-input');
-    const username = hidden?.value;
-    if (!username) return;
+  async function registerForMK(username) {
     const { error } = await supabase.from('mk_registrations').insert({ participant_username: username });
     const msg = document.getElementById('mk-reg-msg');
-    if (error) { showMsg(msg, 'Erreur : ' + error.message, true); }
-    else { hidden.value = ''; if (input) input.value = ''; await loadAll(); }
+    if (error) { showMsg(msg, 'Erreur : ' + error.message, true); return; }
+    document.getElementById('mk-add-hidden').value = '';
+    document.getElementById('mk-add-input').value = '';
+    await loadAll();
+  }
+
+  document.getElementById('mk-add-participant-btn')?.addEventListener('click', async () => {
+    const username = document.getElementById('mk-add-hidden')?.value;
+    if (!username) return;
+    await registerForMK(username);
   });
 
   document.addEventListener('click', async e => {
@@ -1726,7 +1742,9 @@ import Layout from '../layouts/Layout.astro';
     await loadAll();
   });
 
-  // ── Combobox init: add-to-MK (unregistered participants only) ─────
+  // ── Combobox init: add-to-MK ───────────────────────────────────────
+  // Lists unregistered participants; typing a name that matches no one
+  // offers "✚ Créer « X »" — creates the participant, then registers them.
   setupCombobox(
     document.getElementById('mk-add-input'),
     document.getElementById('mk-add-hidden'),
@@ -1734,6 +1752,11 @@ import Layout from '../layouts/Layout.astro';
     () => {
       const registered = new Set(mkRegistrations.map(r => r.participant_username));
       return participants.filter(p => !registered.has(p.username)).map(p => p.username);
+    },
+    async (newName) => {
+      const ok = await ensureParticipant(newName);
+      if (!ok) return;
+      await registerForMK(newName);
     }
   );
 

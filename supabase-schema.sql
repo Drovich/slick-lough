@@ -152,8 +152,11 @@ do $$ declare t text; begin
   end loop;
 end $$;
 
--- ── RLS: public read and write ─────────────────────────────────────────────
--- Access control happens app-side (shared passwords); RLS is open by design.
+-- ── RLS: public read, role-checked write ────────────────────────────────────
+-- Reads stay open to everyone (anyone can watch the live standings).
+-- Writes require a real Supabase Auth session in one of the 3 shared roles
+-- (see the "role_locks" section below for how the admin/arbitre/participant
+-- accounts are set up), and are blocked in real time if that role is locked.
 do $$ declare t text; begin
   foreach t in array array[
     'participants', 'blocs', 'results_trail', 'results_mario_kart', 'results_blocs',
@@ -165,12 +168,127 @@ do $$ declare t text; begin
       execute format('create policy "public read %s"  on %I for select using (true)', t, t);
     exception when duplicate_object then null;
     end;
-    begin
-      execute format('create policy "public write %s" on %I for all using (true) with check (true)', t, t);
-    exception when duplicate_object then null;
-    end;
   end loop;
 end $$;
+
+-- ── Real role-based access control (Supabase Auth) ──────────────────────────
+-- Three shared Auth accounts (admin/arbitre/participant@slicklough.internal,
+-- created once via the Dashboard) each carry a "role" in their user_metadata.
+-- current_app_role() reads that role straight from the request's JWT.
+create or replace function current_app_role() returns text
+language sql stable as $$
+  select coalesce(auth.jwt() -> 'user_metadata' ->> 'role', 'anon')
+$$;
+
+-- role_locks is the real, database-enforced version of the admin's "lock"
+-- buttons. Unlike competition_config (read by the client to show a banner,
+-- but never itself checked by RLS), this table is read INSIDE the write
+-- policies below — so flipping it blocks every holder of that role's shared
+-- password immediately, including browsers already logged in.
+create table if not exists role_locks (
+  role   text primary key check (role in ('participant', 'arbitre')),
+  locked boolean not null default false
+);
+insert into role_locks (role, locked) values ('participant', false), ('arbitre', false)
+  on conflict (role) do nothing;
+
+alter table role_locks enable row level security;
+do $$ begin
+  create policy "public read role_locks" on role_locks for select using (true);
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "admin write role_locks" on role_locks for all
+    using (current_app_role() = 'admin')
+    with check (current_app_role() = 'admin');
+exception when duplicate_object then null; end $$;
+
+create or replace function role_is_locked(r text) returns boolean
+language sql stable as $$
+  select coalesce((select locked from role_locks where role = r), false)
+$$;
+
+-- Replace the old blanket "public write" policies with per-table rules.
+-- Three tiers, matching who is actually meant to trigger each write:
+--
+--   ALL3    admin, or arbitre/participant while not locked
+--           → results entry, blocs topping, MK self-registration: things a
+--             participant is meant to do for themselves.
+--   STAFF   admin, or arbitre while not locked (never participant)
+--           → bracket management, blocs problem definitions, the manual
+--             override, combined-ranking calculations: arbitre/admin tools,
+--             never exposed to participants in the UI and now blocked for
+--             them at the database too, even via devtools.
+--   ADMIN   admin only
+--           → the lottery draw results themselves.
+--
+-- participants also gets a DELETE-only ADMIN policy (removing someone is
+-- admin-only) and a trigger that silently ignores any attempt to change
+-- `blacklisted` from a non-admin session, since RLS is row-level and can't
+-- otherwise single out one column from an update that touches several.
+do $$
+declare
+  t text;
+  all3  text := $c$
+    current_app_role() = 'admin'
+    or (current_app_role() = 'arbitre' and not role_is_locked('arbitre'))
+    or (current_app_role() = 'participant' and not role_is_locked('participant'))
+  $c$;
+  staff text := $c$
+    current_app_role() = 'admin'
+    or (current_app_role() = 'arbitre' and not role_is_locked('arbitre'))
+  $c$;
+begin
+  foreach t in array array['results_trail', 'results_mario_kart', 'results_blocs', 'mk_registrations'] loop
+    execute format('drop policy if exists %I on %I', 'public write ' || t, t);
+    execute format('drop policy if exists %I on %I', 'role write ' || t, t);
+    execute format('create policy %I on %I for all using (%s) with check (%s)', 'role write ' || t, t, all3, all3);
+  end loop;
+
+  foreach t in array array['blocs', 'blocs_override', 'mk_matches', 'combined_rankings', 'competition_config'] loop
+    execute format('drop policy if exists %I on %I', 'public write ' || t, t);
+    execute format('drop policy if exists %I on %I', 'role write ' || t, t);
+    execute format('create policy %I on %I for all using (%s) with check (%s)', 'role write ' || t, t, staff, staff);
+  end loop;
+
+  execute format('drop policy if exists %I on lottery_winners', 'public write lottery_winners');
+  execute format('drop policy if exists %I on lottery_winners', 'role write lottery_winners');
+  execute
+    'create policy "role write lottery_winners" on lottery_winners for all '
+    || 'using (current_app_role() = ''admin'') with check (current_app_role() = ''admin'')';
+
+  -- participants: insert/update open to all 3 (self-registration + editing);
+  -- delete is admin-only (kept separate from insert/update on purpose).
+  drop policy if exists "public write participants" on participants;
+  drop policy if exists "role write participants" on participants;
+  execute format(
+    'create policy "role insert participants" on participants for insert with check (%s)', all3
+  );
+  execute format(
+    'create policy "role update participants" on participants for update using (%s) with check (%s)', all3, all3
+  );
+end $$;
+
+do $$ begin
+  create policy "admin delete participants" on participants for delete
+    using (current_app_role() = 'admin');
+exception when duplicate_object then null; end $$;
+
+-- Column-level guard: only an admin session may flip `blacklisted`. RLS alone
+-- can't restrict a single column within a row-level UPDATE, so a trigger
+-- silently reverts that one field if a non-admin session touches it — the
+-- rest of the update (gender, atelier…) still goes through normally.
+create or replace function protect_blacklisted() returns trigger
+language plpgsql as $$
+begin
+  if current_app_role() <> 'admin' and new.blacklisted is distinct from old.blacklisted then
+    new.blacklisted := old.blacklisted;
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists participants_protect_blacklisted on participants;
+create trigger participants_protect_blacklisted before update on participants
+  for each row execute function protect_blacklisted();
 
 -- ── Storage: bucket for problem photos ─────────────────────────────────────
 -- (create manually in Dashboard > Storage if this fails)

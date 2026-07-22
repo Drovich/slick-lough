@@ -12,12 +12,19 @@ import Layout from '../layouts/Layout.astro';
         <div id="login-error" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-2 mb-4"></div>
         <form id="login-form" class="space-y-4">
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe admin</label>
+            <label for="login-role" class="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
+            <select id="login-role" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-vert/50">
+              <option value="admin" selected>Admin</option>
+              <option value="arbitre">Arbitre</option>
+            </select>
+          </div>
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
             <input type="password" id="password" required
               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-vert/50" />
           </div>
           <button type="submit" class="w-full bg-vert text-white font-semibold py-2 rounded-lg hover:bg-vert/90 transition-colors text-sm">
-            Connexion admin
+            Se connecter
           </button>
         </form>
       </div>
@@ -105,12 +112,9 @@ import Layout from '../layouts/Layout.astro';
 
 <script>
   import { supabase } from '../lib/supabase';
-  import { sha256, getSession, setSession, clearSession } from '../lib/session';
+  import { login, getSession, clearSession } from '../lib/session';
   import { esc } from '../lib/utils';
   import { computeBlocsScores } from '../lib/ranking';
-
-  const adminHash   = import.meta.env.PUBLIC_ADMIN_PASSWORD_HASH;
-  const arbitreHash = import.meta.env.PUBLIC_ARBITRE_PASSWORD_HASH;
 
   function showMsg(el, text, isError = false) {
     el.textContent = text;
@@ -141,23 +145,22 @@ import Layout from '../layouts/Layout.astro';
 
   document.getElementById('login-form').addEventListener('submit', async e => {
     e.preventDefault();
-    const hash = await sha256(document.getElementById('password').value);
+    const role = document.getElementById('login-role').value;
+    const password = document.getElementById('password').value;
     const errEl = document.getElementById('login-error');
-    let role = null;
-    if (hash === adminHash)        role = 'admin';
-    else if (hash === arbitreHash) role = 'arbitre';
-    if (!role) {
-      errEl.textContent = 'Mot de passe incorrect.';
+    const existing = getSession();
+
+    const result = await login(role, existing?.username ?? role, password);
+    if (!result.ok) {
+      errEl.textContent = result.error;
       errEl.classList.remove('hidden');
       return;
     }
     errEl.classList.add('hidden');
-    const existing = getSession();
-    setSession({ username: existing?.username ?? role, role });
     showAdmin(role);
   });
 
-  document.getElementById('logout-btn').addEventListener('click', () => { clearSession(); location.reload(); });
+  document.getElementById('logout-btn').addEventListener('click', async () => { await clearSession(); location.reload(); });
 
   // ── Blocs CRUD ────────────────────────────────────────────────────
   let editingBlocId = null;
@@ -352,8 +355,14 @@ import Layout from '../layouts/Layout.astro';
     el.innerHTML = data.map(p => `
       <div class="flex items-center gap-2 py-2 border-b border-gray-100 last:border-0">
         <span class="flex-1 text-sm font-medium">${esc(p.username)}</span>
-        <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">${p.gender ?? '?'}</span>
-        ${p.atelier ? '<span class="text-xs text-amber-500" title="A participé à un atelier">★</span>' : ''}
+        <select class="gender-sel text-xs border border-gray-200 rounded-md px-1 py-0.5 bg-white" data-user="${esc(p.username)}">
+          <option value=""${!p.gender ? ' selected' : ''}>?</option>
+          <option value="F"${p.gender === 'F' ? ' selected' : ''}>F</option>
+          <option value="M"${p.gender === 'M' ? ' selected' : ''}>M</option>
+        </select>
+        <label class="flex items-center gap-1 text-xs cursor-pointer text-amber-500" title="A participé à un atelier">
+          <input type="checkbox" class="atelier-cb accent-amber-500 w-3.5 h-3.5" data-user="${esc(p.username)}"${p.atelier ? ' checked' : ''} />★
+        </label>
         <button data-blacklist="${esc(p.username)}" data-is="${p.blacklisted ? '1' : '0'}"
           class="text-xs px-2 py-1 rounded-md border transition-colors ${p.blacklisted
             ? 'text-red-500 border-red-300 bg-red-50 hover:bg-red-100'
@@ -363,6 +372,16 @@ import Layout from '../layouts/Layout.astro';
         </button>
         <button data-del="${esc(p.username)}" class="text-xs text-red-400 border border-red-200 px-2 py-1 rounded-md hover:bg-red-50 transition-colors">Supprimer</button>
       </div>`).join('');
+
+    el.querySelectorAll('.gender-sel').forEach(sel => sel.addEventListener('change', async () => {
+      const { error } = await supabase.from('participants').update({ gender: sel.value || null }).eq('username', sel.dataset.user);
+      if (error) showMsg(document.getElementById('participants-msg'), 'Erreur genre : ' + error.message, true);
+    }));
+
+    el.querySelectorAll('.atelier-cb').forEach(cb => cb.addEventListener('change', async () => {
+      const { error } = await supabase.from('participants').update({ atelier: cb.checked }).eq('username', cb.dataset.user);
+      if (error) showMsg(document.getElementById('participants-msg'), 'Erreur atelier : ' + error.message, true);
+    }));
 
     el.querySelectorAll('[data-blacklist]').forEach(btn => btn.addEventListener('click', async () => {
       const username = btn.dataset.blacklist;
